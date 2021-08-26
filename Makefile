@@ -22,7 +22,7 @@ endif
 DEBUGFLAGS = -DFIO_INC_DEBUG
 CPPFLAGS= -D_LARGEFILE_SOURCE -D_FILE_OFFSET_BITS=64 -DFIO_INTERNAL $(DEBUGFLAGS)
 OPTFLAGS= -g -ffast-math
-FIO_CFLAGS= -std=gnu99 -Wwrite-strings -Wall -Wdeclaration-after-statement $(OPTFLAGS) $(EXTFLAGS) $(BUILD_CFLAGS) -I. -I$(SRCDIR)
+FIO_CFLAGS= -std=gnu99 -Wwrite-strings -Wall -Wdeclaration-after-statement $(OPTFLAGS) $(EXTFLAGS) $(BUILD_CFLAGS) -I. -I$(SRCDIR) -I/mpt_point/ceph/src/include/ -L-L/mpt_point/ceph/build/lib/
 LIBS	+= -lm $(EXTLIBS)
 PROGS	= fio
 SCRIPTS = $(addprefix $(SRCDIR)/,tools/fio_generate_plots tools/plot/fio2gnuplot tools/genfio tools/fiologparser.py tools/hist/fiologparser_hist.py tools/hist/fio-histo-log-pctiles.py tools/fio_jsonplus_clat2csv)
@@ -144,12 +144,14 @@ ifdef CONFIG_WINDOWSAIO
 endif
 ifdef CONFIG_RADOS
   rados_SRCS = engines/rados.c
-  rados_LIBS = -lrados
+  rados_LIBS = -L/mpt_point/ceph/ceph/build/bin -lrados 
+  LIBS += -L/mpt_point/ceph/ceph/build/bin
   ENGINES += rados
 endif
 ifdef CONFIG_RBD
   rbd_SRCS = engines/rbd.c
-  rbd_LIBS = -lrbd -lrados
+  rbd_LIBS = -L/mpt_point/ceph/ceph/build/bin -lrbd -lrados
+  LIBS += -L/mpt_point/ceph/ceph/build/bin
   ENGINES += rbd
 endif
 ifdef CONFIG_HTTP
@@ -567,62 +569,63 @@ printing.o: printing.c printing.h
 
 t/io_uring.o: os/linux/io_uring.h
 t/io_uring: $(T_IOU_RING_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_IOU_RING_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_IOU_RING_OBJS) $(LIBS)
 
 t/read-to-pipe-async: $(T_PIPE_ASYNC_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_PIPE_ASYNC_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_PIPE_ASYNC_OBJS) $(LIBS)
 
 t/memlock: $(T_MEMLOCK_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_MEMLOCK_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_MEMLOCK_OBJS) $(LIBS)
 
 t/stest: $(T_SMALLOC_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_SMALLOC_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_SMALLOC_OBJS) $(LIBS)
 
 t/ieee754: $(T_IEEE_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_IEEE_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_IEEE_OBJS) $(LIBS)
 
 fio: $(FIO_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(FIO_OBJS) $(LIBS) $(HDFSLIB)
+	echo $(LDFLAGS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(FIO_OBJS) $(LIBS) $(HDFSLIB) 
 
 t/fuzz/fuzz_parseini: $(T_FUZZ_OBJS)
 ifndef LIB_FUZZING_ENGINE
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_FUZZ_OBJS) $(LIBS) $(HDFSLIB)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_FUZZ_OBJS) $(LIBS) $(HDFSLIB) 
 else
-	$(QUIET_LINK)$(CXX) $(LDFLAGS) -o $@ $(T_FUZZ_OBJS) $(LIB_FUZZING_ENGINE) $(LIBS) $(HDFSLIB)
+	$(QUIET_LINK)$(CXX) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_FUZZ_OBJS) $(LIB_FUZZING_ENGINE) $(LIBS) $(HDFSLIB)
 endif
 
 gfio: $(GFIO_OBJS)
 	$(QUIET_LINK)$(CC) $(filter-out -static, $(LDFLAGS)) -o gfio $(GFIO_OBJS) $(LIBS) $(GFIO_LIBS) $(GTK_LDFLAGS) $(HDFSLIB)
 
 t/fio-genzipf: $(T_ZIPF_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_ZIPF_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_ZIPF_OBJS) $(LIBS)
 
 t/axmap: $(T_AXMAP_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_AXMAP_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_AXMAP_OBJS) $(LIBS)
 
 t/lfsr-test: $(T_LFSR_TEST_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_LFSR_TEST_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_LFSR_TEST_OBJS) $(LIBS)
 
 t/gen-rand: $(T_GEN_RAND_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_GEN_RAND_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_GEN_RAND_OBJS) $(LIBS)
 
 ifeq ($(CONFIG_TARGET_OS), Linux)
 t/fio-btrace2fio: $(T_BTRACE_FIO_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_BTRACE_FIO_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_BTRACE_FIO_OBJS) $(LIBS)
 endif
 
 t/fio-dedupe: $(T_DEDUPE_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_DEDUPE_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_DEDUPE_OBJS) $(LIBS)
 
 t/fio-verify-state: $(T_VS_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_VS_OBJS) $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(T_VS_OBJS) $(LIBS)
 
 t/time-test: $(T_TT_OBJS)
 	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(T_TT_OBJS) $(LIBS)
 
 ifdef CONFIG_HAVE_CUNIT
 unittests/unittest: $(UT_OBJS) $(UT_TARGET_OBJS)
-	$(QUIET_LINK)$(CC) $(LDFLAGS) -o $@ $(UT_OBJS) $(UT_TARGET_OBJS) -lcunit $(LIBS)
+	$(QUIET_LINK)$(CC) $(LDFLAGS) -L/mpt_point/ceph/build/lib/ -o $@ $(UT_OBJS) $(UT_TARGET_OBJS) -lcunit $(LIBS)
 endif
 
 clean: FORCE

@@ -6,7 +6,7 @@
  *
  */
 
-#include <rados/librados.h>
+#include "rados/librados.h"
 #include <pthread.h>
 #include "fio.h"
 #include "../optgroup.h"
@@ -384,7 +384,7 @@ int fio_rados_getevents(struct thread_data *td, unsigned int min,
 	pthread_mutex_unlock(&rados->completed_lock);
 	return events;
 }
-
+ 
 static int fio_rados_setup(struct thread_data *td)
 {
 	struct rados_data *rados = NULL;

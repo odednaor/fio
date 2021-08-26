@@ -1834,7 +1834,7 @@ print_config "http engine" "$http"
 ##########################################
 # check for rados
 if test "$rados" != "yes" ; then
-  rados="no"
+  rados="yes"
 fi
 cat > $TMPC << EOF
 #include <rados/librados.h>
@@ -1862,7 +1862,7 @@ print_config "Rados engine" "$rados"
 ##########################################
 # check for rbd
 if test "$rbd" != "yes" ; then
-  rbd="no"
+  rbd="yes"
 fi
 cat > $TMPC << EOF
 #include <rbd/librbd.h>

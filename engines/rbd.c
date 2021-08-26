@@ -233,18 +233,21 @@ static int _fio_rbd_connect(struct thread_data *td)
 			log_info("failed to disable RBD in-memory cache\n");
 		}
 	}
+
 	r = rbd_open(rbd->io_ctx, o->rbd_name, &rbd->image, NULL /*snap */ );
 	if (r < 0) {
 		log_err("rbd_open failed.\n");
 		goto failed_open;
 	}
-
-	rbd_encryption_luks2_format_options_t *opts = (rbd_encryption_luks2_format_options_t *) alloca(sizeof(rbd_encryption_luks2_format_options_t));
-  	opts->alg = RBD_ENCRYPTION_ALGORITHM_AES256;
-	opts->passphrase = "passphrase";
-  	opts->passphrase_size = strlen("passphrase");
-
-	r = rbd_encryption_format(rbd->image, RBD_ENCRYPTION_FORMAT_LUKS2, opts, sizeof(*opts));
+	// rbd_encryption_luks2_format_options_t *opts = (rbd_encryption_luks2_format_options_t *) alloca(sizeof(rbd_encryption_luks2_format_options_t));
+  	// opts->alg = RBD_ENCRYPTION_ALGORITHM_AES256;
+	// opts->passphrase = "passphrase";
+  	// opts->passphrase_size = strlen("passphrase");
+	// r = rbd_encryption_load(rbd->image, RBD_ENCRYPTION_FORMAT_LUKS2, opts, sizeof(*opts));
+	// if (r < 0) {
+	// 	log_err("rbd_encryption_format failed.\n");
+	// 	goto failed_open;
+	// }
 
 	if (!td->o.odirect) {
 		/*
